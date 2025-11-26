@@ -2,7 +2,6 @@ import math
 import os
 from typing import List, Dict, Any, TypedDict
 from dotenv import load_dotenv
-from IPython.display import Image, display
 
 from langgraph.graph import StateGraph, START, END
 from openai import OpenAI
@@ -12,28 +11,28 @@ load_dotenv()
 
 # _____________________________________________State Section____________________________________________________
 class AgentState(TypedDict, total=False):
-    mode: str  # which task: "overview" | "ask_AI" | "history"
+    mode: str
 
-    symbol: str  # "BTC" / "ETH" / "AAPL", etc.
+    symbol: str
 
-    start_date: str  # start of chart window (used in overview/history)
-    end_date: str  # same as above
+    start_date: str
+    end_date: str
 
-    indicators: Dict[str, float]  # start_price, end_price, return_pct, max_drawdown_pct
+    indicators: Dict[str, float]
 
     chart: List[Dict[str, float | str]]
 
-    news: List[Dict[str, Any]]  # list of news items (title, snippet, published_at, url)
+    news: List[Dict[str, Any]]
 
-    docs: List[Dict[str, str]]  # list of search docs for background mode
+    docs: List[Dict[str, str]]
 
-    question: str  # user question (Ask-AI mode only)
+    question: str
 
-    chart_text: str  # preprocessed string from compress_chart_node
-    news_text: str  # preprocessed string from format_news_node
-    context_text: str  # preprocessed string from build_context_node
+    chart_text: str
+    news_text: str
+    context_text: str
 
-    answer: str  # final output from the LLM task node
+    answer: str
 
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
