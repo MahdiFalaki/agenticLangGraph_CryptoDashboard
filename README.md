@@ -3,7 +3,7 @@
 ---
 
 ## Agentic LLM Dashboard for Live Crypto Insights  
-*(FastAPI + LangGraph + GPT-4.1 + React + Material UI)*
+*(FastAPI + LangGraph + RAG + GPT-4.1 + React + Material UI)*
 
 ---
 
