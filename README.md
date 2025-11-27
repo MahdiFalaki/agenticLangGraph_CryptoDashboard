@@ -30,3 +30,31 @@ The system is fully deployed with:
 
 ## 📁 Project Structure
 
+crypto_agenticAI/
+│
+├── backend/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── llm_graph.py
+│   ├── asset_history_rag.py
+│   ├── market_data.py
+│   ├── news_data.py
+│   ├── news_api_test.py
+│   ├── requirements.txt
+│
+└── frontend/
+    ├── public/
+    ├── dist/
+    ├── node_modules/
+    └── src/
+        ├── assets/
+        ├── components/
+        │   ├── AskAITab.jsx
+        │   ├── OverviewTab.jsx
+        │   ├── HistoryTab.jsx
+        │   ├── FiltersBar.jsx
+        │   ├── TabPanel.jsx
+        ├── App.jsx
+        ├── App.css
+        ├── index.css
+        ├── main.jsx
