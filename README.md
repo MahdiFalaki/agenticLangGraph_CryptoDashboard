@@ -7,6 +7,12 @@
 
 ---
 
+## 🌐 Live Demo
+
+🔗 **https://agentic-lang-graph-crypto-dashboard-q42vfe62t.vercel.app/**
+
+---
+
 This repository contains a full-stack **agentic LLM system** that provides grounded, real-time cryptocurrency insights using a combination of:
 
 - **FastAPI backend**
@@ -19,12 +25,6 @@ The system is fully deployed with:
 
 - **Backend → Render**
 - **Frontend → Vercel**
-
----
-
-## 🌐 Live Demo
-
-🔗 **https://agentic-lang-graph-crypto-dashboard-q42vfe62t.vercel.app/**
 
 ---
 
