@@ -59,3 +59,125 @@ crypto_agenticAI/
         ├── index.css
         ├── main.jsx
 ```
+
+
+---
+
+## 🧠 System Overview
+
+### ⭐ Agent Architecture (LangGraph)
+
+The backend implements a **LangGraph state machine** coordinating three LLM workflows:
+
+---
+
+### **1. Overview Agent**
+Summarizes trends using:
+
+- price data  
+- indicators  
+- compressed RAG context  
+- news events  
+
+---
+
+### **2. Ask-AI Agent**
+A retrieval-augmented QA agent that:
+
+- pulls real-time market data  
+- fetches news (NewsAPI)  
+- performs SerpAPI/Wikipedia lookups  
+- builds consolidated textual context  
+- uses a **draft → verify** two-pass reasoning pattern  
+
+---
+
+### **3. History Agent**
+Stores and returns previous queries & results.
+
+---
+
+## 🗄️ Backend Modules
+
+### **main.py**
+FastAPI entry point — routing for:
+
+- `/overview`
+- `/ask_ai`
+- `/history`
+
+Includes CORS config + dev/prod switching.
+
+---
+
+### **llm_graph.py**
+Defines the LangGraph agent including:
+
+- price fetch node  
+- news fetch node  
+- RAG assembly  
+- verification step  
+- overall execution flow  
+
+---
+
+### **asset_history_rag.py**
+Fetches historical chart data and converts it into:
+
+- trend descriptions  
+- volatility indicators  
+- RAG text chunks  
+
+---
+
+### **market_data.py**
+Coingecko interface for:
+
+- price  
+- volume  
+- market cap  
+- 24h & 7d indicator summaries  
+
+---
+
+### **news_data.py**
+Runs NewsAPI queries, filters headlines, and prepares summaries.
+
+---
+
+### **news_api_test.py**
+Quick script for validating NewsAPI keys and endpoints.
+
+---
+
+## 🎨 Frontend Overview
+
+### **OverviewTab.jsx**
+Displays:
+
+- price charts  
+- AI-generated macro summary  
+
+### **AskAITab.jsx**
+Q&A interface powered by RAG + GPT-4.1.
+
+### **HistoryTab.jsx**
+Scrollable view of previous queries.
+
+### **FiltersBar.jsx**
+UI controls for:
+
+- symbol  
+- date range  
+- aggregation options  
+
+---
+
+## 🛠️ Setup Instructions
+
+### **Backend**
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+'''
