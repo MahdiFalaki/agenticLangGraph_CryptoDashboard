@@ -8,7 +8,7 @@ import {
   Paper,
   Tabs,
   Tab,
-  Container,   // ⬅️ add this
+  Container,
 } from "@mui/material";
 
 import FiltersBar from "./components/FiltersBar.jsx";
@@ -17,8 +17,14 @@ import OverviewTab from "./components/OverviewTab.jsx";
 import AskAITab from "./components/AskAITab.jsx";
 import HistoryTab from "./components/HistoryTab.jsx";
 
+// Backend base URL:
+// - In production (Vercel) it comes from VITE_API_BASE_URL
+// - In local dev it falls back to your local FastAPI server
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
 function App() {
-  // ---- state (unchanged) ----
+  // ---- state ----
   const [symbol, setSymbol] = useState("BTC");
   const [startDate, setStartDate] = useState("2025-01-01");
   const [endDate, setEndDate] = useState("2025-01-31");
@@ -39,13 +45,13 @@ function App() {
 
   const handleTabChange = (_event, newValue) => setTabIndex(newValue);
 
-  // ---- API calls (unchanged) ----
+  // ---- API calls ----
   const handleFetchSummary = async () => {
     setSummaryLoading(true);
     setSummaryError(null);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/asset/${symbol}/summary`,
+        `${API_BASE_URL}/api/asset/${symbol}/summary`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -75,7 +81,7 @@ function App() {
     setQaError(null);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/asset/${symbol}/qa`,
+        `${API_BASE_URL}/api/asset/${symbol}/qa`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -104,7 +110,7 @@ function App() {
     setHistoryError(null);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/asset/${symbol}/history`,
+        `${API_BASE_URL}/api/asset/${symbol}/history`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -139,7 +145,7 @@ function App() {
       <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 2 }}>
         {/* Centered content */}
         <Container
-          maxWidth={false}                 // disable built-in breakpoints
+          maxWidth={false}
           sx={{ maxWidth: "80vw", mx: "auto" }} // 80% of viewport, centered
         >
           {/* Filters */}
