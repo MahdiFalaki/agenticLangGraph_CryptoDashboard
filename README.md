@@ -29,7 +29,7 @@ The system is fully deployed with:
 ---
 
 ## 📁 Project Structure
-
+```
 crypto_agenticAI/
 │
 ├── backend/
@@ -58,3 +58,4 @@ crypto_agenticAI/
         ├── App.css
         ├── index.css
         ├── main.jsx
+```
