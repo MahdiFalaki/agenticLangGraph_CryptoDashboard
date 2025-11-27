@@ -175,11 +175,33 @@ UI controls for:
 
 ## 🛠️ Setup Instructions
 
+### Environment variables:
+Make an Environment file `.env` in the root directory. Put your API keys as:
+```
+COINGECKO_API_KEY=
+NEWS_API_KEY=
+SERPAPI_KEY=
+OPENAI_API_KEY=
+```
+
 ### **Backend**
+In one terminal run:
 ```
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
+```
+
+---
+
+### Frontend
+In a different terminal run:
+
+```bash
+cd frontend
+npm install
+npm run build
+npm run dev
 ```
 ---
 
