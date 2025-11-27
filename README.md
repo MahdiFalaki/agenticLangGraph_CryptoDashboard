@@ -181,3 +181,35 @@ cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+---
+
+## ✨ Features
+
+- LangGraph-based agent workflow  
+- Grounded RAG over price history & news  
+- Two-pass LLM verification  
+- React + Material UI dashboard  
+- Real-time indicators (Coingecko)  
+- Cloud-ready deployment (Render + Vercel)  
+
+---
+
+## 🔧 Future Improvements
+
+- Dockerize backend + frontend  
+- Fix responsive layout sizing  
+- Add chat history to AskAI tab  
+- Add chatbox UI for more natural prompts  
+
+---
+
+## 🤝 Contributing
+
+Issues and PRs welcome.
+
+---
+
+## 📄 License
+
+MIT License.
+
