@@ -1,5 +1,13 @@
 # 🚀 Market AI Crypto Dashboard
 
+![version](https://img.shields.io/badge/version-0.1--demo-blue)
+![status](https://img.shields.io/badge/frontend-demo--build-yellow)
+![backend](https://img.shields.io/badge/backend-v1.0--stable-brightgreen)
+![frontend](https://img.shields.io/badge/frontend-v1.0--WIP-orange)
+
+> ⚠️ **Note:** The current deployed frontend is a **demo version (v0.1)**.  
+> **v1.0 UI redesign** is in development.
+
 ---
 
 ## Agentic LLM Dashboard for Live Crypto Insights  
