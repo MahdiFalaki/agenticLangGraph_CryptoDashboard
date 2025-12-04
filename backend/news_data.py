@@ -52,10 +52,12 @@ def fetch_symbol_news(symbol: str, start_date: str, end_date: str, max_articles:
     for a in articles:
         result.append(
             {
-                "title": a.get("title"),
-                "snippet": a.get("description") or a.get("content") or "",
-                "url": a.get("url"),
-                "published_at": a.get("publishedAt"),
+                "title": a.get("title") or "",
+                "snippet": a.get("description") or "",
+                "content": a.get("content") or "",
+                "url": a.get("url") or "",
+                "published_at": a.get("publishedAt") or "",
+                "image_url": a.get("urlToImage"),
             }
         )
     return result

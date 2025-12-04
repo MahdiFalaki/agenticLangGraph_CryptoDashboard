@@ -91,7 +91,7 @@ def fetch_news(state: AgentState) -> AgentState:
 
     news_text = "".join(f'published at: {i["published_at"]} \n '
                         f'title: {i["title"]} \n'
-                        f'snippet: {i["snippet"]} \n'
+                        f'content: {i["content"]} \n'
                         f'URL: {i["url"]} \n'
                         for i in news)
 
@@ -116,7 +116,7 @@ def build_context(state: AgentState) -> AgentState:
 
     docs_text = "".join(f'[Source {idx+1}] \n'
                         f'title: {d["title"]} \n'
-                        f'snippet: {d["snippet"]} \n'
+                        f'content: {d["content"]} \n'
                         f'url: {d["url"]} \n'
                         f'published_at: {d["published_at"]} \n'
                         for idx, d in enumerate(docs))
@@ -443,4 +443,3 @@ agent = graph.compile()
 #
 # # # For visualizing the graph.
 # # display(Image(agent.get_graph().draw_mermaid_png()))
-#
