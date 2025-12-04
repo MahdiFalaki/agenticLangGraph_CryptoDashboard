@@ -11,8 +11,8 @@ import {
   Container,
 } from "@mui/material";
 
+import DrawerAppBar from "./components/DrawerAppBar.jsx";
 import FiltersBar from "./components/FiltersBar.jsx";
-import TabPanel from "./components/TabPanel.jsx";
 import OverviewTab from "./components/OverviewTab.jsx";
 import AskAITab from "./components/AskAITab.jsx";
 import HistoryTab from "./components/HistoryTab.jsx";
@@ -135,11 +135,11 @@ function App() {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">Market AI Dashboard</Typography>
-        </Toolbar>
-      </AppBar>
+      <DrawerAppBar
+        tabIndex={tabIndex}
+        onTabChange={(i) => setTabIndex(i)}
+      />
+
 
       {/* Page background + vertical padding */}
       <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 2 }}>
@@ -163,24 +163,17 @@ function App() {
           </Box>
 
           {/* Tabs header */}
-          <Paper sx={{ mb: 2 }}>
-            <Tabs value={tabIndex} onChange={handleTabChange}>
-              <Tab label="Overview" />
-              <Tab label="Ask AI" />
-              <Tab label="History" />
-            </Tabs>
-          </Paper>
 
           {/* Tab content */}
-          <TabPanel value={tabIndex} index={0}>
+          {tabIndex === 0 && (
             <OverviewTab
               summaryData={summaryData}
               summaryLoading={summaryLoading}
               summaryError={summaryError}
             />
-          </TabPanel>
+          )}
 
-          <TabPanel value={tabIndex} index={1}>
+          {tabIndex === 1 && (
             <AskAITab
               symbol={symbol}
               qaQuestion={qaQuestion}
@@ -190,9 +183,9 @@ function App() {
               qaLoading={qaLoading}
               qaError={qaError}
             />
-          </TabPanel>
+          )}
 
-          <TabPanel value={tabIndex} index={2}>
+          {tabIndex === 2 && (
             <HistoryTab
               symbol={symbol}
               historyData={historyData}
@@ -200,7 +193,7 @@ function App() {
               historyError={historyError}
               onGenerate={handleFetchHistory}
             />
-          </TabPanel>
+          )}
         </Container>
       </Box>
     </>

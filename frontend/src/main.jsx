@@ -8,11 +8,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 const theme = createTheme({
   palette: {
     background: {
-      default: "#f5f5f7", // light grey page background
+      default: "#F0F4EF",
     },
   },
   shape: {
-    borderRadius: 10,     // softer rounded corners for cards
+    borderRadius: 30,
   },
 });
 
