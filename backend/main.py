@@ -3,10 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
-from market_data import fetch_crypto_history, MarketDataError
-from news_data import fetch_symbol_news
-from asset_history_rag import fetch_asset_background_docs
-from llm_graph import agent, AgentState  # <-- use LangGraph instead of llm_client
+from .market_data import fetch_crypto_history, MarketDataError
+from .news_data import fetch_symbol_news
+from .asset_history_rag import fetch_asset_background_docs
+from .llm_graph import agent, AgentState  # <-- use LangGraph instead of llm_client
 
 app = FastAPI()
 
