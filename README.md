@@ -1,4 +1,4 @@
-# 🚀 Market AI Crypto Dashboard
+# 🚀 Crypto Analysis Agent
 
 ![version](https://img.shields.io/badge/version-0.1--demo-blue)
 ![status](https://img.shields.io/badge/frontend-demo--build-yellow)
