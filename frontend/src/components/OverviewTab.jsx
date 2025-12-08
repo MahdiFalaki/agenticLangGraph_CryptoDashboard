@@ -1,5 +1,6 @@
 // src/components/OverviewTab.jsx
 import {
+  Stack,
   Box,
   Grid,
   Paper,
@@ -55,7 +56,7 @@ function OverviewTab({ summaryData, summaryLoading, summaryError }) {
     {/* Chart column */}
     <Grid size={8}>
       <Paper sx={{ p: 3, height: "100%" }}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
+        <Typography variant="h6" sx={{ mb: 1 }} align={"center"}>
           Price Chart ({summaryData.start_date} → {summaryData.end_date})
         </Typography>
 
@@ -119,26 +120,109 @@ function OverviewTab({ summaryData, summaryLoading, summaryError }) {
     </Grid>
 
     {/* Indicators column */}
-    <Grid size={4}>
-      <Paper sx={{ p: 2, height: "100%" }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
+    <Grid size={4} >
+      <Paper sx={{ p: 3, height: "100%", }}>
+        <Typography variant="h6" sx={{ mb: 4}} align={"center"}>
           Indicators
         </Typography>
+
         {summaryData.indicators ? (
-          <>
-            <Typography>
-              Start Price: {summaryData.indicators.start_price}
-            </Typography>
-            <Typography>
-              End Price: {summaryData.indicators.end_price}
-            </Typography>
-            <Typography>
-              Return (%): {summaryData.indicators.return_pct}
-            </Typography>
-            <Typography>
-              Max Drawdown (%): {summaryData.indicators.max_drawdown_pct}
-            </Typography>
-          </>
+          <Stack
+          direction="column"
+          spacing={4}
+          >
+
+            {/* Row 1 — Price Card */}
+            <Grid >
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  borderRadius: 1,
+                  bgcolor: "#3B413C",
+                  color: "#DAF0EE",
+                }}
+              >
+                <Typography variant="subtitle1" sx={{ opacity: 0.8, mb: 1 }} align={"center"}>
+                  Prices
+                </Typography>
+
+                <Grid container justifyContent="space-around">
+                  <Grid>
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      Start
+                    </Typography>
+                    <Typography variant="h6">
+                      {Number(summaryData.indicators.start_price).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
+                  </Grid>
+
+                  <Grid>
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      End
+                    </Typography>
+                    <Typography variant="h6">
+                      {Number(summaryData.indicators.end_price).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+
+            {/* Row 2 — Performance Card */}
+            <Grid  >
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 3,
+                  borderRadius: 1,
+                  bgcolor: "#3B413C",
+                  color: "#DAF0EE",
+                }}
+              >
+                <Typography variant="subtitle1" sx={{ opacity: 0.8, mb: 1 }} align={"center"}>
+                  Performance
+                </Typography>
+
+                <Grid container justifyContent="space-around">
+                  <Grid>
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      Return
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color:
+                          summaryData.indicators.return_pct >= 0
+                            ? "success.main"
+                            : "error.main",
+                      }}
+                    >
+                      {summaryData.indicators.return_pct}%
+                    </Typography>
+                  </Grid>
+
+                  <Grid>
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      Max Drawdown
+                    </Typography>
+                    <Typography variant="h6" sx={{ color: "error.main" }}>
+                      {summaryData.indicators.max_drawdown_pct}%
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+
+          </Stack>
         ) : (
           <Typography>No indicators available.</Typography>
         )}
@@ -148,7 +232,7 @@ function OverviewTab({ summaryData, summaryLoading, summaryError }) {
 
   {/* ============ ROW 2 CONTAINER: AI SUMMARY FULL WIDTH ============ */}
   <Grid container spacing={2} sx={{ mt: 2 }}>
-    <Grid item xs={12}>
+    <Grid>
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           AI Summary for changes in the period
@@ -162,7 +246,7 @@ function OverviewTab({ summaryData, summaryLoading, summaryError }) {
 
   {/* ============ ROW 3 CONTAINER: NEWS FULL WIDTH ============ */}
   <Grid container spacing={2} sx={{ mt: 2 }}>
-    <Grid item xs={12}>
+    <Grid size={12}>
       <Paper sx={{ p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           Latest News

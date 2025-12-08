@@ -52,7 +52,7 @@ function DrawerAppBar(props) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar component="nav">
+      <AppBar component="nav" sx={{backgroundColor: "#3B413C"}}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -66,19 +66,22 @@ function DrawerAppBar(props) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, color: "#DAF0EE" }}
           >
             Crypto Analysis Agent
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item, index) => (
-              <Button
-                key={item}
-                sx={{ color: "#fff" }}
+
+                <Button variant="contained" key={item}
+                  sx={{
+                    backgroundColor: "#DAF0EE",
+                    color: "#3B413C",
+                    mr: 2
+                  }}
                 onClick={() => onTabChange(index)}
-              >
-                {item}
-              </Button>
+                >{item}
+                </Button>
             ))}
           </Box>
         </Toolbar>

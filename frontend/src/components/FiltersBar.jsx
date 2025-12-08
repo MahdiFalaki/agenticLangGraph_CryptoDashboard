@@ -1,5 +1,5 @@
 // src/components/FiltersBar.jsx
-import { Grid, TextField, MenuItem, Button, Paper } from "@mui/material";
+import { Box, Grid, TextField, MenuItem, Button, Paper } from "@mui/material";
 
 const SYMBOL_OPTIONS = ["BTC", "ETH", "SOL", "XRP", "DOGE"];
 
@@ -16,7 +16,7 @@ function FiltersBar({
   return (
     <Paper sx={{ p: 2 }}>
       <Grid container alignItems="center" spacing={2}>
-        <Grid item xs={12} sm={3}>
+        <Grid>
           <TextField
             select
             fullWidth
@@ -32,7 +32,7 @@ function FiltersBar({
           </TextField>
         </Grid>
 
-        <Grid item xs={12} sm={3}>
+        <Grid >
           <TextField
             fullWidth
             label="Start Date"
@@ -43,7 +43,7 @@ function FiltersBar({
           />
         </Grid>
 
-        <Grid item xs={12} sm={3}>
+        <Grid >
           <TextField
             fullWidth
             label="End Date"
@@ -54,15 +54,20 @@ function FiltersBar({
           />
         </Grid>
 
-        <Grid item xs={12} sm={3}>
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={onShow}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Show"}
-          </Button>
+        <Grid sx={{ ml: "auto", pr: 2 }}>
+          {/*<Box sx={{ display: "flex", justifyContent: "flex-end" }}>*/}
+            <Button
+              sx={{backgroundColor:"#3B413C",
+              color: "#DAF0EE",
+              }}
+              fullWidth
+              variant="contained"
+              onClick={onShow}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Show"}
+            </Button>
+          {/*</Box>*/}
         </Grid>
       </Grid>
     </Paper>
