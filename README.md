@@ -126,4 +126,3 @@ Open `http://localhost:5173`.
 - CoinGecko free tier has historical data window limits.
 - First request can be slower due to external API latency.
 - If endpoints change, restart both backend and frontend dev servers.
-

@@ -1,0 +1,10 @@
+.git
+.gitignore
+.idea
+__pycache__/
+**/__pycache__/
+*.pyc
+.env
+frontend/
+node_modules/
+dist/
