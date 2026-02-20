@@ -1,4 +1,3 @@
-// src/components/HistoryTab.jsx
 import {
   Box,
   Grid,
@@ -7,6 +6,7 @@ import {
   Button,
   CircularProgress,
   Link,
+  Stack,
 } from "@mui/material";
 
 import {
@@ -25,24 +25,26 @@ function HistoryTab({
   historyLoading,
   historyError,
   onGenerate,
+  generateButtonId,
 }) {
   return (
     <>
-      {/* Top control panel */}
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="h6">History Story for {symbol}</Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          This will generate a background story for the asset using its price chart
-          and external sources (Wikipedia and other web pages). The list on the right
-          shows the sources used.
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={onGenerate}
-          disabled={historyLoading}
+      <Paper sx={{ p: 2.5, mb: 2 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          spacing={2}
         >
-          {historyLoading ? "Loading..." : "Generate History Story"}
-        </Button>
+          <Box>
+            <Typography variant="h6">Background Brief for {symbol}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Generate a grounded background story with chart context and source links.
+            </Typography>
+          </Box>
+          <Button id={generateButtonId} variant="contained" onClick={onGenerate} disabled={historyLoading}>
+            {historyLoading ? "Loading..." : "Generate History Story"}
+          </Button>
+        </Stack>
       </Paper>
 
       {historyError && (
@@ -59,10 +61,9 @@ function HistoryTab({
 
       {historyData && (
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          {/* Chart */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2, height: "100%", width: "171vh" }}>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Paper sx={{ p: 2.5, height: "100%" }}>
+              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 700 }}>
                 History Chart
               </Typography>
               <Box sx={{ height: 300 }}>
@@ -70,28 +71,14 @@ function HistoryTab({
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={historyData.chart}>
                       <defs>
-                        <linearGradient
-                          id="historyGradient"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#9c27b0"
-                            stopOpacity={0.4}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#9c27b0"
-                            stopOpacity={0}
-                          />
+                        <linearGradient id="historyGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#1f6feb" stopOpacity={0.28} />
+                          <stop offset="100%" stopColor="#1f6feb" stopOpacity={0} />
                         </linearGradient>
                       </defs>
 
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="date" />
+                      <CartesianGrid stroke="#eef2f7" vertical={false} />
+                      <XAxis dataKey="date" minTickGap={24} />
                       <YAxis
                         tickFormatter={(v) =>
                           v.toLocaleString(undefined, {
@@ -111,7 +98,7 @@ function HistoryTab({
                       <Area
                         type="monotone"
                         dataKey="price"
-                        stroke="#9c27b0"
+                        stroke="#1f6feb"
                         fill="url(#historyGradient)"
                         dot={false}
                       />
@@ -124,28 +111,19 @@ function HistoryTab({
             </Paper>
           </Grid>
 
-          {/* Story + Sources */}
-          <Grid item xs={12} md={4}>
-            <Paper
-              sx={{
-                p: 2,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography variant="h6" sx={{ mb: 1 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Paper sx={{ p: 2.5, height: "100%" }}>
+              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 700 }}>
                 History Story
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" color="text.secondary">
                 {historyData.history_story || "No history story available."}
               </Typography>
 
-              {/* Sources list */}
               {historyData.news && historyData.news.length > 0 && (
                 <Box mt={2}>
-                  <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                    Sources used for this history
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Sources
                   </Typography>
 
                   {historyData.news.map((item, idx) => {
@@ -154,37 +132,16 @@ function HistoryTab({
                         ? item.published_at.slice(0, 10)
                         : "";
 
-                    const isWikipedia =
-                      item.title?.startsWith("Wikipedia:") ||
-                      (item.url && item.url.includes("wikipedia.org"));
-
                     return (
-                      <Box key={idx} mb={1}>
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          color={isWikipedia ? "primary.main" : "inherit"}
-                        >
-                          {dateLabel && `${dateLabel} – `}
-                          <Link
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                      <Box key={idx} mb={1.5}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {dateLabel && `${dateLabel} - `}
+                          <Link href={item.url} target="_blank" rel="noopener noreferrer">
                             {item.title}
                           </Link>
-                          {isWikipedia && (
-                            <Typography
-                              variant="caption"
-                              component="span"
-                              sx={{ ml: 0.5 }}
-                            >
-                              (Wikipedia)
-                            </Typography>
-                          )}
                         </Typography>
 
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary">
                           {item.snippet}
                         </Typography>
                       </Box>

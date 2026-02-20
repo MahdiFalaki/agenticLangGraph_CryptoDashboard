@@ -1,4 +1,4 @@
-# backend/market_data.py
+"""CoinGecko market data adapter and indicator calculations."""
 
 import os
 from datetime import datetime
@@ -12,21 +12,16 @@ load_dotenv()
 COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY")
 COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
 
-# -----------------------------------------
-# Map UI symbols -> provider coin IDs
-# Extend this list to support more cryptos.
-# -----------------------------------------
 SYMBOL_TO_ID = {
     "BTC": "bitcoin",
     "ETH": "ethereum",
     "SOL": "solana",
     "XRP": "ripple",
     "DOGE": "dogecoin",
-    # add more here as needed
 }
 
 class MarketDataError(Exception):
-    """Custom error for market data issues."""
+    """Raised when market data retrieval or transformation fails."""
     pass
 
 

@@ -7,9 +7,6 @@ load_dotenv()
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 
-if not NEWS_API_KEY:
-    raise RuntimeError("NEWS_API_KEY missing from .env")
-
 SYMBOL_TO_NEWS_QUERY = {
     "BTC": "bitcoin OR \"bitcoin price\"",
     "ETH": "ethereum OR \"ethereum price\"",
@@ -27,6 +24,8 @@ def fetch_symbol_news(symbol: str, start_date: str, end_date: str, max_articles:
       only allow querying a limited recent window (e.g., last 30 days).
     - We let NewsAPI default to its allowed time range.
     """
+    if not NEWS_API_KEY:
+        raise RuntimeError("NEWS_API_KEY missing from .env")
 
     q = SYMBOL_TO_NEWS_QUERY.get(symbol.upper(), symbol)
 

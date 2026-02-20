@@ -1,37 +1,45 @@
-from fastapi import FastAPI, Path, HTTPException
+"""FastAPI entrypoint for market overview, Q&A, and background endpoints."""
+
+import os
+from typing import Any, Dict, List
+
+from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any
 
-from .market_data import fetch_crypto_history, MarketDataError
-from .news_data import fetch_symbol_news
 from .asset_history_rag import fetch_asset_background_docs
-from .llm_graph import agent, AgentState  # <-- use LangGraph instead of llm_client
+from .llm_graph import AgentState, agent
+from .market_data import MarketDataError, fetch_crypto_history
+from .news_data import fetch_symbol_news
 
 app = FastAPI()
 
-# ----------- CORS CONFIG (DEV-FRIENDLY) ----------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # DEV: allow any origin
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ----------- Pydantic MODELS ----------------
 class SummaryRequest(BaseModel):
+    """Common request body for date-bounded asset queries."""
+
     start_date: str
     end_date: str
 
 
 class ChartPoint(BaseModel):
+    """Single chart data point in ISO date + price format."""
+
     date: str
     price: float
 
 
 class Indicators(BaseModel):
+    """Core performance metrics computed from chart data."""
+
     start_price: float
     end_price: float
     return_pct: float
@@ -39,6 +47,8 @@ class Indicators(BaseModel):
 
 
 class NewsItem(BaseModel):
+    """Normalized news/source item returned to the frontend."""
+
     title: str
     snippet: str
     content: str
@@ -48,6 +58,8 @@ class NewsItem(BaseModel):
 
 
 class SummaryResponse(BaseModel):
+    """Aggregated response used by the legacy overview endpoint."""
+
     start_date: str
     end_date: str
     chart: List[ChartPoint]
@@ -56,33 +68,84 @@ class SummaryResponse(BaseModel):
     summary: str
 
 
+class MarketResponse(BaseModel):
+    """Market-only payload for staged overview loading."""
+
+    start_date: str
+    end_date: str
+    chart: List[ChartPoint]
+    indicators: Indicators
+
+
+class SummaryTextResponse(BaseModel):
+    """Summary text payload for staged overview loading."""
+
+    summary: str
+
+
+class NewsResponse(BaseModel):
+    """News payload for staged overview loading."""
+
+    news: List[NewsItem]
+
+
 class QARequest(BaseModel):
+    """Request body for Q&A generation."""
+
     start_date: str
     end_date: str
     question: str
 
 
 class QAResponse(BaseModel):
+    """Q&A response with answer and supporting context."""
+
     indicators: Indicators
     news: List[NewsItem]
     answer: str
 
 
 class HistoryRequest(BaseModel):
+    """Request body for background brief generation."""
+
     start_date: str
     end_date: str
 
 
 class HistoryResponse(BaseModel):
+    """History response with chart, brief, and source list."""
+
     chart: List[ChartPoint]
     history_story: str
     news: List[NewsItem]
 
 
-# ----------- Small helpers to call the graph ----------------
+def _dependency_status() -> Dict[str, bool]:
+    """Return boolean readiness for required external-service keys."""
+
+    return {
+        "openai_api_key": bool(os.getenv("OPENAI_API_KEY")),
+        "coingecko_api_key": bool(os.getenv("COINGECKO_API_KEY")),
+        "news_api_key": bool(os.getenv("NEWS_API_KEY")),
+        "serpapi_key": bool(os.getenv("SERPAPI_KEY")),
+    }
+
+
+@app.on_event("startup")
+def startup_diagnostics() -> None:
+    """Log missing environment keys on startup for quick diagnostics."""
+
+    deps = _dependency_status()
+    missing = [k for k, ready in deps.items() if not ready]
+    if missing:
+        print(f"[WARN] Missing environment keys: {', '.join(missing)}")
+    else:
+        print("[INFO] All required environment keys are present.")
+
 
 def _empty_state(mode: str) -> AgentState:
-    """Base state with safe defaults so all nodes can run."""
+    """Return a safe initial graph state."""
+
     return {
         "mode": mode,
         "symbol": "",
@@ -103,6 +166,8 @@ def _summarize_price_action_with_graph(
     indicators: Dict[str, float],
     chart: List[Dict[str, Any]],
 ) -> str:
+    """Run overview graph branch and return generated summary text."""
+
     state: AgentState = _empty_state(mode="overview")
     state["symbol"] = symbol
     state["start_date"] = start_date
@@ -120,6 +185,8 @@ def _answer_price_question_with_graph(
     news: List[Dict[str, Any]],
     question: str,
 ) -> str:
+    """Run Q&A graph branch and return generated answer text."""
+
     state: AgentState = _empty_state(mode="ask_AI")
     state["symbol"] = symbol
     state["indicators"] = indicators
@@ -134,6 +201,8 @@ def _generate_asset_background_with_graph(
     symbol: str,
     docs: List[Dict[str, str]],
 ) -> str:
+    """Run history graph branch and return generated background text."""
+
     state: AgentState = _empty_state(mode="history")
     state["symbol"] = symbol
     state["docs"] = docs
@@ -142,10 +211,22 @@ def _generate_asset_background_with_graph(
     return result["answer"]
 
 
-# ----------- ENDPOINTS ----------------
 @app.get("/health")
 def health_check():
+    """Liveness probe."""
+
     return {"status": "ok"}
+
+
+@app.get("/health/deps")
+def health_dependency_check():
+    """Dependency key readiness probe."""
+
+    deps = _dependency_status()
+    return {
+        "status": "ok" if all(deps.values()) else "degraded",
+        "dependencies": deps,
+    }
 
 
 @app.post("/api/asset/{symbol}/summary", response_model=SummaryResponse)
@@ -153,17 +234,15 @@ async def get_summary(
     symbol: str = Path(..., description="Asset symbol, e.g. BTC, ETH"),
     body: SummaryRequest = None,
 ):
-    """
-    Overview tab: returns chart + indicators + summary + latest news.
-    Uses real market data via fetch_crypto_history and NewsAPI via fetch_symbol_news.
-    """
-    # 1) Price data
+    """Return full overview payload (market + summary + news)."""
+
+    # Fetch market baseline first; all remaining data depends on it.
     try:
         market = fetch_crypto_history(symbol, body.start_date, body.end_date)
     except MarketDataError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # 2) News data (NEW)
+    # News failures are non-fatal; return empty list as fallback.
     try:
         news = fetch_symbol_news(
             symbol=symbol,
@@ -175,7 +254,7 @@ async def get_summary(
         print(f"[WARN] fetch_symbol_news failed in /summary: {e}")
         news = []
 
-    # 3) LLM summary from price data (we can ignore news here if you want)
+    # Summary failure falls back to deterministic numeric description.
     try:
         summary_text = _summarize_price_action_with_graph(
             symbol=symbol,
@@ -190,18 +269,90 @@ async def get_summary(
             f"Between {body.start_date} and {body.end_date}, {symbol} moved from "
             f"{market['indicators']['start_price']} to {market['indicators']['end_price']} USD "
             f"({market['indicators']['return_pct']}% return). "
-            "A detailed AI summary is temporarily unavailable."
+            "A detailed summary is temporarily unavailable."
         )
 
-    # 4) Return chart + indicators + news + summary
     return {
         "start_date": body.start_date,
         "end_date": body.end_date,
         "chart": market["chart"],
         "indicators": market["indicators"],
-        "news": news,   # ⬅️ was [] before
+        "news": news,
         "summary": summary_text,
     }
+
+
+@app.post("/api/asset/{symbol}/market", response_model=MarketResponse)
+async def get_market(
+    symbol: str = Path(..., description="Asset symbol, e.g. BTC, ETH"),
+    body: SummaryRequest = None,
+):
+    """Return market-only payload for staged UI rendering."""
+
+    try:
+        market = fetch_crypto_history(symbol, body.start_date, body.end_date)
+    except MarketDataError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {
+        "start_date": body.start_date,
+        "end_date": body.end_date,
+        "chart": market["chart"],
+        "indicators": market["indicators"],
+    }
+
+
+@app.post("/api/asset/{symbol}/summary_text", response_model=SummaryTextResponse)
+async def get_summary_text(
+    symbol: str = Path(..., description="Asset symbol, e.g. BTC, ETH"),
+    body: SummaryRequest = None,
+):
+    """Return summary-only payload for staged UI rendering."""
+
+    try:
+        market = fetch_crypto_history(symbol, body.start_date, body.end_date)
+    except MarketDataError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        summary_text = _summarize_price_action_with_graph(
+            symbol=symbol,
+            start_date=body.start_date,
+            end_date=body.end_date,
+            indicators=market["indicators"],
+            chart=market["chart"],
+        )
+    except Exception as e:
+        print(f"[ERROR] Graph/LLM call failed in /summary_text: {e}")
+        summary_text = (
+            f"Between {body.start_date} and {body.end_date}, {symbol} moved from "
+            f"{market['indicators']['start_price']} to {market['indicators']['end_price']} USD "
+            f"({market['indicators']['return_pct']}% return). "
+            "A detailed summary is temporarily unavailable."
+        )
+
+    return {"summary": summary_text}
+
+
+@app.post("/api/asset/{symbol}/news", response_model=NewsResponse)
+async def get_news(
+    symbol: str = Path(..., description="Asset symbol, e.g. BTC, ETH"),
+    body: SummaryRequest = None,
+):
+    """Return news-only payload for staged UI rendering."""
+
+    try:
+        news = fetch_symbol_news(
+            symbol=symbol,
+            start_date=body.start_date,
+            end_date=body.end_date,
+            max_articles=5,
+        )
+    except Exception as e:
+        print(f"[WARN] fetch_symbol_news failed in /news: {e}")
+        news = []
+
+    return {"news": news}
 
 
 @app.post("/api/asset/{symbol}/qa", response_model=QAResponse)
@@ -209,14 +360,8 @@ async def get_qa(
     symbol: str = Path(..., description="Asset symbol, e.g. BTC, ETH, AAPL"),
     body: QARequest = None,
 ):
-    """
-    Ask AI tab:
-    - Get real price indicators
-    - Get recent news
-    - Ask the LLM to answer the question using both
-    """
+    """Return answer text grounded in indicators and recent news."""
 
-    # 1) Price data
     try:
         market = fetch_crypto_history(symbol, body.start_date, body.end_date)
     except MarketDataError as e:
@@ -224,7 +369,6 @@ async def get_qa(
 
     indicators = market["indicators"]
 
-    # 2) News data
     try:
         news = fetch_symbol_news(
             symbol=symbol,
@@ -236,7 +380,6 @@ async def get_qa(
         print(f"[WARN] fetch_symbol_news failed: {e}")
         news = []
 
-    # 3) LLM answer via graph
     try:
         answer = _answer_price_question_with_graph(
             symbol=symbol,
@@ -250,7 +393,7 @@ async def get_qa(
             f"Between {body.start_date} and {body.end_date}, {symbol} moved from "
             f"{indicators['start_price']} to {indicators['end_price']} USD "
             f"({indicators['return_pct']}% return). "
-            "A detailed AI explanation is temporarily unavailable."
+            "A detailed explanation is temporarily unavailable."
         )
 
     return {
@@ -262,14 +405,9 @@ async def get_qa(
 
 @app.post("/api/asset/{symbol}/history", response_model=HistoryResponse)
 async def get_history(symbol: str, body: HistoryRequest):
-    """
-    History tab:
+    """Return chart, background brief, and supporting sources."""
 
-    - Uses price data only for the chart (visualization).
-    - Uses web search (RAG) docs to build a long-term background story.
-    """
-
-    # 1) Chart for visualization
+    # Chart and docs are independent sources; keep graceful fallbacks.
     try:
         market = fetch_crypto_history(symbol, body.start_date, body.end_date)
         chart = market["chart"]
@@ -277,26 +415,23 @@ async def get_history(symbol: str, body: HistoryRequest):
         print(f"[WARN] fetch_crypto_history failed in /history: {e}")
         chart = []
 
-    # 2) Retrieve background documents (RAG)
     try:
-        docs = fetch_asset_background_docs(symbol, max_results=5)
+        docs = fetch_asset_background_docs(symbol, max_results=3)
     except Exception as e:
         print(f"[WARN] fetch_asset_background_docs failed: {e}")
         docs = []
 
-    # 3) Generate background story via graph (history mode)
     try:
         story = _generate_asset_background_with_graph(symbol=symbol, docs=docs)
     except Exception as e:
         print(f"[ERROR] Graph/LLM call failed in /history: {e}")
         story = (
             f"This is supposed to be a historical overview of {symbol}, "
-            "but the AI component failed. Please try again later."
+            "but the summary component failed. Please try again later."
         )
 
-    # 4) Return chart + story + docs (docs show up on the right in the UI)
     return {
         "chart": chart,
         "history_story": story,
-        "news": docs,  # same shape as NewsItem; frontend treats these as sources
+        "news": docs,
     }

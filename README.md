@@ -1,245 +1,129 @@
-# 🚀 Crypto Analysis Agent
+# Crypto Analysis Dashboard v2
 
-![version](https://img.shields.io/badge/version-0.1--demo-blue)
-![status](https://img.shields.io/badge/frontend-demo--build-yellow)
-![backend](https://img.shields.io/badge/backend-v1.0--stable-brightgreen)
-![frontend](https://img.shields.io/badge/frontend-v1.0--WIP-orange)
+![version](https://img.shields.io/badge/version-v2-blue)
+![backend](https://img.shields.io/badge/backend-FastAPI%20%2B%20LangGraph-green)
+![frontend](https://img.shields.io/badge/frontend-React%20%2B%20MUI-informational)
+![status](https://img.shields.io/badge/status-active-success)
 
-> ⚠️ **Note:** The current deployed frontend is a **demo version (v0.1)**.  
-> **v1.0 UI redesign** is in development.
+A full-stack crypto insights application with staged market loading, grounded question answering, and background brief generation.
 
----
+## Stack
 
-## Agentic LLM Dashboard for Live Crypto Insights  
-*(FastAPI + LangGraph + RAG + GPT-4.1 + React + Material UI)*
+- Backend: FastAPI, LangGraph, OpenAI Python SDK
+- Data Providers: CoinGecko, NewsAPI, SerpAPI, Wikipedia
+- Frontend: React, Vite, MUI, Recharts
 
----
+## Architecture Overview
 
-## 🌐 Live Demo
+### Backend flows
 
-🔗 **https://agentic-lang-graph-crypto-dashboard-q42vfe62t.vercel.app/**
+- Overview
+  - Market data from CoinGecko
+  - Summary generation via graph
+  - News fetch from NewsAPI
+- Q&A
+  - Indicators + news grounding
+  - Draft and grounded rewrite pass
+- History
+  - Source retrieval (SerpAPI + Wikipedia)
+  - Background brief generation
 
----
+### Frontend flows
 
-This repository contains a full-stack **agentic LLM system** that provides grounded, real-time cryptocurrency insights using a combination of:
+- Overview tab
+  - Apply filters, then staged rendering (metrics -> chart -> notes -> news)
+- Q&A tab
+  - Ask question and get grounded response with source list
+- History tab
+  - Generate background brief with supporting references
 
-- **FastAPI backend**
-- **LangGraph agent state machine**
-- **RAG over price history, news & market data**
-- **OpenAI GPT-4.1**
-- **React + Material UI frontend**
+## Project Structure
 
-The system is fully deployed with:
-
-- **Backend → Render**
-- **Frontend → Vercel**
-
----
-
-## 📁 Project Structure
-```
+```text
 crypto_agenticAI/
-│
-├── backend/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── llm_graph.py
-│   ├── asset_history_rag.py
-│   ├── market_data.py
-│   ├── news_data.py
-│   ├── news_api_test.py
-│   ├── requirements.txt
-│
-└── frontend/
-    ├── public/
-    ├── dist/
-    ├── node_modules/
-    └── src/
-        ├── assets/
-        ├── components/
-        │   ├── AskAITab.jsx
-        │   ├── OverviewTab.jsx
-        │   ├── HistoryTab.jsx
-        │   ├── FiltersBar.jsx
-        │   ├── TabPanel.jsx
-        ├── App.jsx
-        ├── App.css
-        ├── index.css
-        ├── main.jsx
+|-- backend/
+|   |-- main.py
+|   |-- llm_graph.py
+|   |-- market_data.py
+|   |-- news_data.py
+|   |-- asset_history_rag.py
+|   `-- requirements.txt
+|-- frontend/
+|   |-- src/
+|   |   |-- App.jsx
+|   |   `-- components/
+|   |-- package.json
+|   `-- vite.config.js
+|-- environment.yml
+`-- README.md
 ```
 
+## Environment Variables
 
----
+Create a root `.env` file:
 
-## 🧠 System Overview
-
-### ⭐ Agent Architecture (LangGraph)
-
-The backend implements a **LangGraph state machine** coordinating three LLM workflows:
-
----
-
-### **1. Overview Agent**
-Summarizes trends using:
-
-- price data  
-- indicators  
-- compressed RAG context  
-- news events  
-
----
-
-### **2. Ask-AI Agent**
-A retrieval-augmented QA agent that:
-
-- pulls real-time market data  
-- fetches news (NewsAPI)  
-- performs SerpAPI/Wikipedia lookups  
-- builds consolidated textual context  
-- uses a **draft → verify** two-pass reasoning pattern  
-
----
-
-### **3. History Agent**
-Stores and returns previous queries & results.
-
----
-
-## 🗄️ Backend Modules
-
-### **main.py**
-FastAPI entry point — routing for:
-
-- `/overview`
-- `/ask_ai`
-- `/history`
-
-Includes CORS config + dev/prod switching.
-
----
-
-### **llm_graph.py**
-Defines the LangGraph agent including:
-
-- price fetch node  
-- news fetch node  
-- RAG assembly  
-- verification step  
-- overall execution flow  
-
----
-
-### **asset_history_rag.py**
-Fetches historical chart data and converts it into:
-
-- trend descriptions  
-- volatility indicators  
-- RAG text chunks  
-
----
-
-### **market_data.py**
-Coingecko interface for:
-
-- price  
-- volume  
-- market cap  
-- 24h & 7d indicator summaries  
-
----
-
-### **news_data.py**
-Runs NewsAPI queries, filters headlines, and prepares summaries.
-
----
-
-### **news_api_test.py**
-Quick script for validating NewsAPI keys and endpoints.
-
----
-
-## 🎨 Frontend Overview
-
-### **OverviewTab.jsx**
-Displays:
-
-- price charts  
-- AI-generated macro summary  
-
-### **AskAITab.jsx**
-Q&A interface powered by RAG + GPT-4.1.
-
-### **HistoryTab.jsx**
-Scrollable view of previous queries.
-
-### **FiltersBar.jsx**
-UI controls for:
-
-- symbol  
-- date range  
-- aggregation options  
-
----
-
-## 🛠️ Setup Instructions
-
-### Environment variables:
-Make an Environment file `.env` in the root directory. Put your API keys as:
-```
+```env
 COINGECKO_API_KEY=
 NEWS_API_KEY=
 SERPAPI_KEY=
 OPENAI_API_KEY=
 ```
 
-### **Backend**
-In one terminal run:
-```
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
+For local frontend->backend routing, set in `frontend/.env`:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
----
+## Local Setup
+
+### Backend
+
+```bash
+conda activate cryptoProj_env_win
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
 
 ### Frontend
-In a different terminal run:
 
 ```bash
 cd frontend
 npm install
-npm run build
 npm run dev
 ```
----
 
-## ✨ Features
+Open `http://localhost:5173`.
 
-- LangGraph-based agent workflow  
-- Grounded RAG over price history & news  
-- Two-pass LLM verification  
-- React + Material UI dashboard  
-- Real-time indicators (Coingecko)  
-- Cloud-ready deployment (Render + Vercel)  
+## API Reference
 
----
+### Health
 
-## 🔧 Future Improvements
+- `GET /health`
+- `GET /health/deps`
 
-- Dockerize backend + frontend  
-- Fix responsive layout sizing  
-- Add chat history to AskAI tab  
-- Add chatbox UI for more natural prompts  
+### Overview
 
----
+- `POST /api/asset/{symbol}/summary` (legacy combined payload)
+- `POST /api/asset/{symbol}/market`
+- `POST /api/asset/{symbol}/summary_text`
+- `POST /api/asset/{symbol}/news`
 
-## 🤝 Contributing
+### Q&A and History
 
-Issues and PRs welcome.
+- `POST /api/asset/{symbol}/qa`
+- `POST /api/asset/{symbol}/history`
 
----
+## Frontend Features
 
-## 📄 License
+- Dashboard-style layout with responsive cards and charts
+- Per-tab onboarding popovers (shown once per tab)
+- Date validation and range enforcement before API requests
+- Graceful loading/error states and backward compatibility fallback
 
-MIT License.
+## Notes
+
+- CoinGecko free tier has historical data window limits.
+- First request can be slower due to external API latency.
+- If endpoints change, restart both backend and frontend dev servers.
 

@@ -66,8 +66,10 @@ def fetch_wikipedia_doc(symbol: str) -> Dict | None:
         return {
             "title": f"Wikipedia: {top_title}",
             "snippet": snippet,
+            "content": snippet,
             "url": url,
             "published_at": "",  # Wikipedia doesn't give a single 'published' date
+            "image_url": None,
         }
 
     except Exception as e:
@@ -134,12 +136,13 @@ def fetch_asset_background_docs(symbol: str, max_results: int = 5) -> List[Dict]
             {
                 "title": title,
                 "snippet": snippet,
+                "content": snippet,
                 "url": url,
                 "published_at": published_at,
+                "image_url": None,
             }
         )
         if url:
             seen_urls.add(url)
 
     return docs
-

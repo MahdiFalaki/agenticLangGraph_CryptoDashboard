@@ -1,4 +1,3 @@
-// src/components/AskAITab.jsx
 import {
   Box,
   Grid,
@@ -11,6 +10,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Stack,
 } from "@mui/material";
 
 function AskAITab({
@@ -21,20 +21,20 @@ function AskAITab({
   qaData,
   qaLoading,
   qaError,
+  questionFieldId,
 }) {
   return (
     <>
-      {/* Top card: question input */}
-      <Paper sx={{ p: 2, mb: 2 }}>
+      <Paper sx={{ p: 2.5, mb: 2 }}>
         <Typography variant="h6" gutterBottom>
-          Ask AI about {symbol}
+          Market Q&A for {symbol}
         </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          The question will be answered using price &amp; news in the selected
-          date range.
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Responses are based on price indicators and supporting news context.
         </Typography>
 
         <TextField
+          id={questionFieldId}
           fullWidth
           multiline
           minRows={3}
@@ -44,55 +44,43 @@ function AskAITab({
           sx={{ mb: 2 }}
         />
 
-        <Button
-          variant="contained"
-          onClick={onAsk}
-          disabled={qaLoading || !qaQuestion.trim()}
-        >
-          {qaLoading ? "Thinking..." : "Ask"}
+        <Button variant="contained" onClick={onAsk} disabled={qaLoading || !qaQuestion.trim()}>
+          {qaLoading ? "Working..." : "Get Answer"}
         </Button>
       </Paper>
 
-      {/* Error card */}
       {qaError && (
         <Paper sx={{ p: 2, mb: 2 }}>
           <Typography color="error">Error: {qaError}</Typography>
         </Paper>
       )}
 
-      {/* Loading spinner while no data yet */}
       {qaLoading && !qaData && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {/* Answer + Supporting News */}
       {qaData && (
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          {/* Left: AI Answer */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h6" gutterBottom>
-                AI Answer
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Paper sx={{ p: 2.5, height: "100%" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
+                Response
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ whiteSpace: "pre-line" }} // nicer wrapping if LLM uses line breaks
-              >
+              <Typography variant="body2" sx={{ whiteSpace: "pre-line", lineHeight: 1.7 }}>
                 {qaData.answer}
               </Typography>
             </Paper>
           </Grid>
 
-          {/* Right: Supporting News */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2, height: "100%" }}>
-              <Typography variant="h6" gutterBottom>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Paper sx={{ p: 2.5, height: "100%" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
                 Supporting News
               </Typography>
               {qaData.news && qaData.news.length > 0 ? (
-                <List dense>
+                <List dense disablePadding>
                   {qaData.news.map((item, idx) => (
                     <Box key={idx}>
                       <ListItem
@@ -101,19 +89,23 @@ function AskAITab({
                         target="_blank"
                         rel="noopener noreferrer"
                         alignItems="flex-start"
+                        sx={{ px: 0, py: 1.2, color: "inherit", textDecoration: "none" }}
                       >
                         <ListItemText
-                          primary={item.title}
+                          primary={
+                            <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.4 }}>
+                              {item.title}
+                            </Typography>
+                          }
                           secondary={
-                            <>
-                              <Typography variant="body2" component="span">
+                            <Stack spacing={0.5}>
+                              <Typography variant="caption" color="text.secondary">
                                 {item.snippet}
                               </Typography>
-                              <br />
-                              <Typography variant="caption" component="span">
+                              <Typography variant="caption" color="text.secondary">
                                 {item.published_at}
                               </Typography>
-                            </>
+                            </Stack>
                           }
                         />
                       </ListItem>
@@ -122,7 +114,7 @@ function AskAITab({
                   ))}
                 </List>
               ) : (
-                <Typography variant="body2">
+                <Typography variant="body2" color="text.secondary">
                   No supporting news available.
                 </Typography>
               )}
