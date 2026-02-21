@@ -1,81 +1,119 @@
-# Crypto Analysis Dashboard v2
+# Crypto Analysis Dashboard 
 
 ![version](https://img.shields.io/badge/version-v2-blue)
-![backend](https://img.shields.io/badge/backend-FastAPI%20%2B%20LangGraph-green)
 ![frontend](https://img.shields.io/badge/frontend-React%20%2B%20MUI-informational)
-![status](https://img.shields.io/badge/status-active-success)
+![backend](https://img.shields.io/badge/backend-FastAPI%20%2B%20LangGraph-green)
+![deployment](https://img.shields.io/badge/deployment-AWS-orange)
 
-A full-stack crypto insights application with staged market loading, grounded question answering, and background brief generation.
+Crypto Analysis Dashboard v2 is a production crypto intelligence web app focused on fast market awareness and clear decision support.
 
-## Stack
+It brings price action, indicators, news context, Q&A, and historical background into one interface so analysis can happen in a single flow instead of across multiple tools.
 
-- Backend: FastAPI, LangGraph, OpenAI Python SDK
-- Data Providers: CoinGecko, NewsAPI, SerpAPI, Wikipedia
-- Frontend: React, Vite, MUI, Recharts
+Typical usage:
 
-## Architecture Overview
+- Select a symbol and date window
+- Review indicators and chart movement
+- Read short market notes and current news context
+- Ask targeted questions
+- Generate a background brief with source references
 
-### Backend flows
+## Live Deployment
 
-- Overview
-  - Market data from CoinGecko
-  - Summary generation via graph
-  - News fetch from NewsAPI
-- Q&A
-  - Indicators + news grounding
-  - Draft and grounded rewrite pass
-- History
-  - Source retrieval (SerpAPI + Wikipedia)
-  - Background brief generation
+- Website (CloudFront): [https://d3db91zo0jyf9c.cloudfront.net](https://d3db91zo0jyf9c.cloudfront.net)
+- Backend API (App Runner): [https://vdrpfsgzmf.us-east-1.awsapprunner.com](https://vdrpfsgzmf.us-east-1.awsapprunner.com)
+- Health checks:
+  - [https://vdrpfsgzmf.us-east-1.awsapprunner.com/health](https://vdrpfsgzmf.us-east-1.awsapprunner.com/health)
+  - [https://vdrpfsgzmf.us-east-1.awsapprunner.com/health/deps](https://vdrpfsgzmf.us-east-1.awsapprunner.com/health/deps)
 
-### Frontend flows
+## What The App Does
 
-- Overview tab
-  - Apply filters, then staged rendering (metrics -> chart -> notes -> news)
-- Q&A tab
-  - Ask question and get grounded response with source list
-- History tab
-  - Generate background brief with supporting references
+- Tracks price behavior for supported symbols (`BTC`, `ETH`, `SOL`, `XRP`, `DOGE`)
+- Computes key indicators:
+  - start price
+  - end price
+  - return percentage
+  - max drawdown percentage
+- Shows staged overview loading:
+  - indicators -> chart -> summary notes -> news
+- Generates concise market notes for the selected period
+- Supports question answering grounded in market indicators and news context
+- Generates a background brief with source references in the History view
 
-## Project Structure
+## AI Model Usage
 
-```text
-crypto_agenticAI/
-|-- backend/
-|   |-- main.py
-|   |-- llm_graph.py
-|   |-- market_data.py
-|   |-- news_data.py
-|   |-- asset_history_rag.py
-|   `-- requirements.txt
-|-- frontend/
-|   |-- src/
-|   |   |-- App.jsx
-|   |   `-- components/
-|   |-- package.json
-|   `-- vite.config.js
-|-- environment.yml
-`-- README.md
-```
+- Overview summaries: `gpt-5-nano`
+- Ask/Q&A responses: `gpt-5-mini`
+- History background generation: lightweight GPT-5 flow in backend graph pipeline
 
-## Environment Variables
+## Tech Stack
 
-Create a root `.env` file:
+- Frontend:
+  - React
+  - Vite
+  - MUI
+  - Recharts
+- Backend:
+  - FastAPI
+  - LangGraph
+  - OpenAI Python SDK
+  - Uvicorn
+- Data Providers:
+  - CoinGecko
+  - NewsAPI
+  - SerpAPI
+  - Wikipedia
+- DevOps:
+  - Docker (backend image)
+  - GitHub Actions (CI/CD workflows)
+  - AWS CloudFront + S3 (frontend hosting)
+  - AWS App Runner (backend runtime)
+  - AWS ECR (backend image registry)
+  - AWS Secrets Manager (runtime secrets)
 
-```env
-COINGECKO_API_KEY=
-NEWS_API_KEY=
-SERPAPI_KEY=
-OPENAI_API_KEY=
-```
+## Production Architecture
 
-For local frontend->backend routing, set in `frontend/.env`:
+The system is split into static frontend delivery and managed backend compute.  
+Deployment and runtime responsibilities are separated to keep releases predictable and operations simple.
 
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
+- Frontend delivery:
+  - Vite build output is stored in S3.
+  - CloudFront serves assets globally over HTTPS.
+  - CDN invalidation is used after frontend deployments.
+  - SPA route fallback is handled at CDN/error-response level.
+- Backend runtime:
+  - FastAPI is containerized with Docker.
+  - Images are stored in ECR.
+  - App Runner deploys and runs the backend container.
+  - Runtime secrets are loaded from AWS Secrets Manager.
+- API behavior:
+  - Health probes: `/health`, `/health/deps`.
+  - Staged overview endpoints: `/market`, `/summary_text`, `/news`.
+  - Legacy compatibility endpoint: `/summary`.
+- CI/CD and traffic flow:
+  - GitHub Actions automates frontend and backend deployment workflows.
+  - Browser -> CloudFront -> S3 for frontend requests.
+  - Browser -> App Runner for backend API requests.
+- External data services:
+  - CoinGecko: market history and price series.
+  - NewsAPI: period news context.
+  - SerpAPI + Wikipedia: history/source retrieval.
 
-## Local Setup
+## API Surface
+
+- Health:
+  - `GET /health`
+  - `GET /health/deps`
+- Overview:
+  - `POST /api/asset/{symbol}/summary` (legacy combined endpoint)
+  - `POST /api/asset/{symbol}/market`
+  - `POST /api/asset/{symbol}/summary_text`
+  - `POST /api/asset/{symbol}/news`
+- Ask/Q&A:
+  - `POST /api/asset/{symbol}/qa`
+- History:
+  - `POST /api/asset/{symbol}/history`
+
+## Local Development
 
 ### Backend
 
@@ -95,34 +133,46 @@ npm run dev
 
 Open `http://localhost:5173`.
 
-## API Reference
+## Environment Variables
 
-### Health
+Backend (`.env`):
 
-- `GET /health`
-- `GET /health/deps`
+```env
+OPENAI_API_KEY=
+COINGECKO_API_KEY=
+COINGECKO_API_PLAN=demo
+NEWS_API_KEY=
+SERPAPI_KEY=
+```
 
-### Overview
+Frontend (`frontend/.env`):
 
-- `POST /api/asset/{symbol}/summary` (legacy combined payload)
-- `POST /api/asset/{symbol}/market`
-- `POST /api/asset/{symbol}/summary_text`
-- `POST /api/asset/{symbol}/news`
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
 
-### Q&A and History
+## Repository Structure
 
-- `POST /api/asset/{symbol}/qa`
-- `POST /api/asset/{symbol}/history`
+```text
+crypto_agenticAI/
+|-- backend/
+|   |-- main.py
+|   |-- llm_graph.py
+|   |-- market_data.py
+|   |-- news_data.py
+|   |-- asset_history_rag.py
+|   |-- Dockerfile
+|   `-- requirements.txt
+|-- frontend/
+|   |-- src/
+|   |-- public/
+|   `-- package.json
+|-- .github/workflows/
+|   |-- backend-deploy.yml
+|   `-- frontend-deploy.yml
+`-- README.md
+```
 
-## Frontend Features
+## Project Status
 
-- Dashboard-style layout with responsive cards and charts
-- Per-tab onboarding popovers (shown once per tab)
-- Date validation and range enforcement before API requests
-- Graceful loading/error states and backward compatibility fallback
-
-## Notes
-
-- CoinGecko free tier has historical data window limits.
-- First request can be slower due to external API latency.
-- If endpoints change, restart both backend and frontend dev servers.
+`v2` is live and production-deployed. Current focus is performance tuning, reliability improvements, and continued UX refinement.
