@@ -13,8 +13,9 @@ import AskAITab from "./components/AskAITab.jsx";
 import HistoryTab from "./components/HistoryTab.jsx";
 import GuidedTip from "./components/GuidedTip.jsx";
 
-const API_BASE_URL =
+const RAW_API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = RAW_API_BASE_URL.replace(/\/+$/, "");
 
 const COINGECKO_FREE_TIER_DAYS = 365;
 const ALLOWED_WINDOW_DAYS = Math.floor(COINGECKO_FREE_TIER_DAYS * 0.75);
@@ -162,6 +163,28 @@ function App() {
     return false;
   };
 
+  const buildHttpError = async (response) => {
+    let detail = "";
+    try {
+      const data = await response.json();
+      if (typeof data?.detail === "string") {
+        detail = data.detail;
+      } else if (Array.isArray(data?.detail)) {
+        detail = data.detail.map((item) => item?.msg || JSON.stringify(item)).join("; ");
+      } else if (data && typeof data === "object") {
+        detail = JSON.stringify(data);
+      }
+    } catch {
+      // Keep empty detail when response body is not JSON.
+    }
+
+    return new Error(
+      detail
+        ? `Request failed with status ${response.status}: ${detail}`
+        : `Request failed with status ${response.status}`
+    );
+  };
+
   const fetchJson = async (url, payload) => {
     const response = await fetch(url, {
       method: "POST",
@@ -169,7 +192,7 @@ function App() {
       body: JSON.stringify(payload),
     });
     if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+      throw await buildHttpError(response);
     }
     return response.json();
   };
@@ -228,7 +251,7 @@ function App() {
       }
 
       if (!marketResponse.ok) {
-        throw new Error(`Request failed with status ${marketResponse.status}`);
+        throw await buildHttpError(marketResponse);
       }
       const market = await marketResponse.json();
 
@@ -290,7 +313,7 @@ function App() {
         }
       );
       if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
+        throw await buildHttpError(response);
       }
       const data = await response.json();
       setQaData(data);
@@ -329,7 +352,7 @@ function App() {
       }
 
       if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
+        throw await buildHttpError(response);
       }
 
       const data = await response.json();

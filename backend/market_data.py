@@ -10,7 +10,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY")
-COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
+COINGECKO_API_PLAN = os.getenv("COINGECKO_API_PLAN", "demo").strip().lower()
+COINGECKO_BASE_URL = (
+    "https://pro-api.coingecko.com/api/v3"
+    if COINGECKO_API_PLAN == "pro"
+    else "https://api.coingecko.com/api/v3"
+)
 
 SYMBOL_TO_ID = {
     "BTC": "bitcoin",
@@ -58,9 +63,11 @@ def fetch_crypto_history(symbol: str, start_date: str, end_date: str) -> Dict[st
 
     url = f"{COINGECKO_BASE_URL}/coins/{coin_id}/market_chart/range"
 
-    headers = {
-        "x-cg-demo-api-key": COINGECKO_API_KEY,
-    }
+    headers = (
+        {"x-cg-pro-api-key": COINGECKO_API_KEY}
+        if COINGECKO_API_PLAN == "pro"
+        else {"x-cg-demo-api-key": COINGECKO_API_KEY}
+    )
 
     params = {
         "vs_currency": "usd",
