@@ -39,6 +39,13 @@ Typical usage:
 - Supports question answering grounded in market indicators and news context
 - Generates a background brief with source references in the History view
 
+ ## Tech Stack
+
+- Frontend: React.js, Vite, MUI, Recharts
+- Backend: FastAPI, LangGraph, OpenAI Python SDK, Uvicorn
+- Third-Party API Data Providers: CoinGecko, NewsAPI, SerpAPI, Wikipedia
+- DevOps: Docker (backend image), GitHub Actions (CI/CD workflows), AWS CloudFront + S3 (frontend hosting), AWS App Runner (backend runtime), AWS ECR (backend image registry), AWS Secrets Manager (runtime secrets)
+
 ## AI Model Usage
 
 - Overview summaries: `gpt-5-nano`
@@ -147,13 +154,6 @@ crypto_agenticAI/
   - `POST /api/asset/{symbol}/qa`
 - History:
   - `POST /api/asset/{symbol}/history`
-
- ## Tech Stack
-
-- Frontend: React.js, Vite, MUI, Recharts
-- Backend: FastAPI, LangGraph, OpenAI Python SDK, Uvicorn
-- Third-Party API Data Providers: CoinGecko, NewsAPI, SerpAPI, Wikipedia
-- DevOps: Docker (backend image), GitHub Actions (CI/CD workflows), AWS CloudFront + S3 (frontend hosting), AWS App Runner (backend runtime), AWS ECR (backend image registry), AWS Secrets Manager (runtime secrets)
 
 ## Project Status
 
