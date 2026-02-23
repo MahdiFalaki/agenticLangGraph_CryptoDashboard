@@ -150,28 +150,10 @@ crypto_agenticAI/
 
  ## Tech Stack
 
-- Frontend:
-  - React
-  - Vite
-  - MUI
-  - Recharts
-- Backend:
-  - FastAPI
-  - LangGraph
-  - OpenAI Python SDK
-  - Uvicorn
-- Data Providers:
-  - CoinGecko
-  - NewsAPI
-  - SerpAPI
-  - Wikipedia
-- DevOps:
-  - Docker (backend image)
-  - GitHub Actions (CI/CD workflows)
-  - AWS CloudFront + S3 (frontend hosting)
-  - AWS App Runner (backend runtime)
-  - AWS ECR (backend image registry)
-  - AWS Secrets Manager (runtime secrets)
+- Frontend: React.js, Vite, MUI, Recharts
+- Backend: FastAPI, LangGraph, OpenAI Python SDK, Uvicorn
+- Third-Party API Data Providers: CoinGecko, NewsAPI, SerpAPI, Wikipedia
+- DevOps: Docker (backend image), GitHub Actions (CI/CD workflows), AWS CloudFront + S3 (frontend hosting), AWS App Runner (backend runtime), AWS ECR (backend image registry), AWS Secrets Manager (runtime secrets)
 
 ## Project Status
 
