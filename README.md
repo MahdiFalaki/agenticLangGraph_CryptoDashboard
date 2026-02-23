@@ -45,31 +45,6 @@ Typical usage:
 - Ask/Q&A responses: `gpt-5-mini`
 - History background generation: lightweight GPT-5 flow in backend graph pipeline
 
-## Tech Stack
-
-- Frontend:
-  - React
-  - Vite
-  - MUI
-  - Recharts
-- Backend:
-  - FastAPI
-  - LangGraph
-  - OpenAI Python SDK
-  - Uvicorn
-- Data Providers:
-  - CoinGecko
-  - NewsAPI
-  - SerpAPI
-  - Wikipedia
-- DevOps:
-  - Docker (backend image)
-  - GitHub Actions (CI/CD workflows)
-  - AWS CloudFront + S3 (frontend hosting)
-  - AWS App Runner (backend runtime)
-  - AWS ECR (backend image registry)
-  - AWS Secrets Manager (runtime secrets)
-
 ## Production Architecture
 
 The system is split into static frontend delivery and managed backend compute.  
@@ -97,6 +72,32 @@ Deployment and runtime responsibilities are separated to keep releases predictab
   - CoinGecko: market history and price series.
   - NewsAPI: period news context.
   - SerpAPI + Wikipedia: history/source retrieval.
+
+ ## Tech Stack
+
+- Frontend:
+  - React
+  - Vite
+  - MUI
+  - Recharts
+- Backend:
+  - FastAPI
+  - LangGraph
+  - OpenAI Python SDK
+  - Uvicorn
+- Data Providers:
+  - CoinGecko
+  - NewsAPI
+  - SerpAPI
+  - Wikipedia
+- DevOps:
+  - Docker (backend image)
+  - GitHub Actions (CI/CD workflows)
+  - AWS CloudFront + S3 (frontend hosting)
+  - AWS App Runner (backend runtime)
+  - AWS ECR (backend image registry)
+  - AWS Secrets Manager (runtime secrets)
+
 
 ## API Surface
 
