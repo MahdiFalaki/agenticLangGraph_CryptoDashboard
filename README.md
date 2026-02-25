@@ -176,3 +176,56 @@ crypto_agenticAI/
 ## Project Status
 
 `v2` is live and production-deployed. Current focus is performance tuning, reliability improvements, and continued UX refinement.
+
+## DevOps Scope: What We Did vs. What Professional DevOps Adds
+
+### DevOps Work Implemented in This Project
+
+- **Containerization and backend runtime packaging**
+  - Built a production backend image with Docker (`backend/Dockerfile`) and standardized runtime startup with Uvicorn.
+- **AWS backend delivery**
+  - Published backend images to **AWS ECR**.
+  - Deployed and updated backend service on **AWS App Runner**.
+  - Exposed runtime probes (`/health`, `/health/deps`) for service readiness/liveness checks.
+- **AWS frontend delivery**
+  - Built frontend artifacts with Vite and deployed static assets to **AWS S3**.
+  - Served frontend globally through **AWS CloudFront**.
+  - Ran **CloudFront invalidation** after deployments to ensure users receive fresh assets.
+- **CI/CD automation (GitHub Actions)**
+  - Created separate workflows for backend and frontend deployment triggers.
+  - Automated Docker build + push, App Runner deployment trigger, S3 sync, and CloudFront invalidation.
+  - Used GitHub Actions OIDC/role-based AWS credential configuration.
+- **Secrets/config handling**
+  - Managed runtime/API configuration via environment variables and AWS secret-backed configuration.
+
+### What Professional DevOps Engineering Usually Includes (Not Yet Fully Implemented Here)
+
+- **Infrastructure as Code at full depth**
+  - End-to-end infra definitions (e.g., Terraform/CloudFormation/CDK) for reproducible environments, drift detection, and formal change review.
+- **Multi-environment release strategy**
+  - Distinct dev/staging/prod environments with promotion gates, approvals, and environment parity controls.
+- **Advanced release safety**
+  - Blue/green or canary rollouts, automated rollback strategy, and progressive traffic shifting.
+- **Deeper observability/SRE practices**
+  - Centralized logs, metrics, distributed tracing, SLO/SLI dashboards, alert routing, and incident playbooks.
+- **Security hardening maturity**
+  - Automated SAST/DAST/container/IaC scanning in CI, dependency vulnerability policies, secret rotation policies, least-privilege audits, and compliance baselines.
+- **Platform reliability operations**
+  - Capacity planning, load/performance testing in pipeline, cost governance, backup/disaster-recovery drills, and formal on-call/incident response processes.
+
+### Honest Summary
+
+This project demonstrates **practical DevOps implementation for a production-capable web app** (containerization, AWS deployment, CI/CD automation, and runtime checks). It is strong for portfolio/interview evidence of hands-on delivery. It is not yet the full scope of a mature enterprise DevOps platform program with comprehensive IaC governance, staged release orchestration, deep SRE observability, and compliance-grade security operations.
+
+
+## LinkedIn-Ready Project Description (Short)
+
+**Crypto Market Dashboard** *(Nov 2025)*  
+Full-stack crypto intelligence dashboard that combines market data, news context, and agentic LLM workflows to generate grounded insights for analysis.
+
+- Built a FastAPI + LangGraph backend with dedicated overview, Q&A, and history flows.
+- Implemented two-pass draft → verification generation to improve factual reliability.
+- Developed a React + MUI frontend with interactive charts, staged loading, and source-linked outputs.
+- Deployed on AWS: backend on App Runner (Docker images via ECR), frontend on S3 + CloudFront, with GitHub Actions CI/CD.
+
+**Skills:** LangGraph Agents · FastAPI · React.js · Material UI · RAG · Docker · AWS (App Runner, ECR, S3, CloudFront) · GitHub Actions
