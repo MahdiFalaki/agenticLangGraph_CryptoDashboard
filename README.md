@@ -19,11 +19,11 @@ Typical usage:
 
 ## Live Deployment
 
-> **Note:** The model was deployed on AWS during the free trial period of the services used. Since that trial period has ended, I am not able to keep the deployment running at my personal expense.
+> **Update (April 19, 2026):** The application was previously deployed on AWS using the free trial period of the services used. The live deployment is no longer active, as I am unable to maintain the hosting costs personally at this time.
 
-- Website (CloudFront): [https://d3db91zo0jyf9c.cloudfront.net](https://d3db91zo0jyf9c.cloudfront.net)
-- Backend API (App Runner): [https://vdrpfsgzmf.us-east-1.awsapprunner.com](https://vdrpfsgzmf.us-east-1.awsapprunner.com)
-- Health checks:
+- Previous Website (CloudFront): [https://d3db91zo0jyf9c.cloudfront.net](https://d3db91zo0jyf9c.cloudfront.net)
+- Previous Backend API (App Runner): [https://vdrpfsgzmf.us-east-1.awsapprunner.com](https://vdrpfsgzmf.us-east-1.awsapprunner.com)
+- Previous health checks:
   - [https://vdrpfsgzmf.us-east-1.awsapprunner.com/health](https://vdrpfsgzmf.us-east-1.awsapprunner.com/health)
   - [https://vdrpfsgzmf.us-east-1.awsapprunner.com/health/deps](https://vdrpfsgzmf.us-east-1.awsapprunner.com/health/deps)
 
