@@ -19,6 +19,8 @@ Typical usage:
 
 ## Live Deployment
 
+> **Note:** The model was deployed on AWS during the free trial period of the services used. Since that trial period has ended, I am not able to keep the deployment running at my personal expense.
+
 - Website (CloudFront): [https://d3db91zo0jyf9c.cloudfront.net](https://d3db91zo0jyf9c.cloudfront.net)
 - Backend API (App Runner): [https://vdrpfsgzmf.us-east-1.awsapprunner.com](https://vdrpfsgzmf.us-east-1.awsapprunner.com)
 - Health checks:
